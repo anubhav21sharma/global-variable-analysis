@@ -7,6 +7,10 @@ void f1(int b)
    a = a+b;
    c = a + 3;
 }
+void f2()
+{
+
+}
 int main ()
 {
 	int a,b = 2,d;
@@ -18,5 +22,6 @@ int main ()
 	}
 	b=3;
 	f1(d);
+	f2();
 	return 0;
 }

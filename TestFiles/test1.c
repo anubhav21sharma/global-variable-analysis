@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+int ga,gb,gc;
+
 int fn1(int i)
 {
 	printf ("\n in fn1 : %d", i);
