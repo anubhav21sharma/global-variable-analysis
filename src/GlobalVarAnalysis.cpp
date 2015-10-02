@@ -20,7 +20,7 @@ GlobalVarAnalysis::GlobalVarAnalysis() {
 }
 
 bool GlobalVarAnalysis::isGlobal(tree v) {
-	return true;
+	return is_global_var(v) && DECL_P(v);
 }
 
 GlobalVarAnalysis::~GlobalVarAnalysis() {
@@ -46,7 +46,7 @@ void GlobalVarAnalysis::populateFunctionIDs() {
 		listOfFunctions.push_back(f);
 	}
 }
-
+//DECL_BUILT_IN
 void GlobalVarAnalysis::collectGlobalsInFunction() {
 	for (int i = 0; i < listOfFunctions.size(); i++) {
 		struct cgraph_node *node = listOfFunctions[i].fNode;
@@ -63,7 +63,20 @@ void GlobalVarAnalysis::collectGlobalsInFunction() {
 						tree var = gimple_op(curStmt, numOps);
 						if (TREE_CODE(var) != INTEGER_CST/*TREE_CODE(var) == VAR_DECL || TREE_CODE(var) == SSA_NAME || TREE_CODE(var) == PARM_DECL*/) {
 							if (isGlobal(var)) {
-								Variable v(varToString(var),var);
+								Variable v(varToString(var), var);
+								globalsInFunctions[listOfFunctions[i]].insert(v);
+							}
+
+						}
+
+					}
+				} else if (gimple_code(curStmt) == GIMPLE_COND) {
+					int numOps = gimple_num_ops(curStmt);
+					while (numOps--) {
+						tree var = gimple_op(curStmt, numOps);
+						if (TREE_CODE(var) != INTEGER_CST/*TREE_CODE(var) == VAR_DECL || TREE_CODE(var) == SSA_NAME || TREE_CODE(var) == PARM_DECL*/) {
+							if (isGlobal(var)) {
+								Variable v(varToString(var), var);
 								globalsInFunctions[listOfFunctions[i]].insert(v);
 							}
 

@@ -10,6 +10,7 @@
 
 #include "gcc-plugin.h"
 #include "tree.h"
+#include "tree-flow.h"
 #include "basic-block.h"
 #include "tree-ssa-alias.h"
 #include "gimple.h"

@@ -1,6 +1,6 @@
 #include <stdio.h>
 int ga,gb,gc,gd;
-int a,b,c,d;
+int b,c,d;
 //int g()
 //{
 //	int a;
@@ -20,10 +20,15 @@ int a,b,c,d;
 //}
 int main ()
 {
-	a = a+1;
 	int a;
-	a = b+c;
+	a = b+2;
 	b = a*b;
 	//printf("a:%d\n",a);
 	return a;
 }
+
+
+//TODO:
+//1. Iterate over call graph.
+//2. Find direct/indirect accesses.
+//3. Handle conditional,function call,switch, return statements.
