@@ -1,4 +1,4 @@
-BASE_DIR =/mnt/Acer/GCC
+BASE_DIR =/home/test/GCC
 INSTALL = $(BASE_DIR)/install
 CC = $(INSTALL)/bin/g++
 

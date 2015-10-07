@@ -1,27 +1,44 @@
 #include <stdio.h>
-int c;
-void f1(int b)
-{
-   int a=3;
-   b = 2;
-   a = a+b;
-   c = a + 3;
-}
-void f2()
-{
 
+void f();
+void g();
+void h();
+void i();
+void k();
+void j();
+void x();
+void y();
+
+void f() {
+	g();
+	h();
 }
-int main ()
-{
-	int a,b = 2,d;
-	a = 10;
-	while(a < 50)
-	{
-		a = a+b;
-		d = d+a;
-	}
-	b=3;
-	f1(d);
-	f2();
-	return 0;
+
+void g() {
+	i();
+	j();
 }
+
+void i() {
+}
+
+void j() {
+	j();
+}
+
+void h() {
+	f();
+	k();
+}
+
+void k() {
+}
+
+void x() {
+	y();
+}
+
+void y() {
+}
+
+

@@ -18,9 +18,20 @@
 #include "tree-pass.h"
 #include "gimple-pretty-print.h"
 #include <string>
+#include <vector>
+#include "Function.h"
 #include <string.h>
+#include <iostream>
 
 using namespace std;
+
+int linearSearch(vector<Function> v, Function f){
+	for(int i=0; i<v.size(); i++){
+		if(v[i].fId == f.fId)
+			return i;
+	}
+	return -1;
+}
 
 
 string stmtToString(gimple stmt) {

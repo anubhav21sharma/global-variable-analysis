@@ -1,34 +1,34 @@
 #include <stdio.h>
-int ga,gb,gc,gd;
-int b,c,d;
-//int g()
-//{
-//	int a;
-//	a = d;
-//	g();
-//	return a;
-//}
-//int f()
-//{
-//	a=0;
-//	if(a>=2)
-//		a=b;
-//	else
-//		b=c;
-//	g();
-//	return a;
-//}
-int main ()
-{
-	int a;
-	a = b+2;
-	b = a*b;
-	//printf("a:%d\n",a);
-	return a;
+int ga, gb, gc, gd;
+int k();
+int g() {
+	int ga;
+	ga = gd;
+	g();
+	return ga;
+}
+int f() {
+	k();
+	if (ga >= 2)
+		ga = gb;
+	else
+		gb = gc;
+	g();
+	return ga;
 }
 
+int k() {
+	int ga;
+	ga = gd;
+	k();
+	return gb;
+}
+
+int main() {
+	return k();
+}
 
 //TODO:
-//1. Iterate over call graph.
-//2. Find direct/indirect accesses.
-//3. Handle conditional,function call,switch, return statements.
+//1. Handle switch statements.
+//2. Only iterate user defined functions.
+

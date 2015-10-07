@@ -19,11 +19,11 @@
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="run"/>
 <booleanAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN" value="false"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="plugin_init"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-fplugin=./plugin.so -c ../TestFiles/test1.c -O3 -fipa-pta -fno-inline"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="/mnt/Acer/GCC/install/bin/g++"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-fplugin=./plugin.so -c ../TestFiles/test1.c -O0 -fipa-pta -fno-inline"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="/home/test/GCC/install/bin/g++"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="pa-project"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="cdt.managedbuild.config.gnu.cross.exe.debug.1402512464"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value=""/>
 <stringAttribute key="org.eclipse.cdt.launch.WORKING_DIRECTORY" value="${workspace_loc:pa-project}/bin"/>
 <booleanAttribute key="org.eclipse.cdt.launch.use_terminal" value="true"/>
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">

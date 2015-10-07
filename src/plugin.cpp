@@ -63,8 +63,6 @@ int breakPointMethod() {
 	return 0;
 }
 
-
-
 extern int plugin_init(struct plugin_name_args* plugin_info, struct plugin_gcc_version* version) {
 	breakPointMethod();
 	register_callback(plugin_info->base_name, /* char *name: Plugin name, could be any
@@ -85,32 +83,62 @@ static unsigned int execute_gimple_manipulation(void) {
 	if (!dump_file) {
 		//dump_file = stdout;
 	}
-
+	//dump_file = stdout;
 	GlobalVarAnalysis gvAnalysis;
 	gvAnalysis.collectAllGlobals();
 	gvAnalysis.populateFunctionIDs();
-	gvAnalysis.collectGlobalsInFunction();
+	gvAnalysis.findReachabilities();
+	gvAnalysis.collectDirectGlobalsInFunction();
+	gvAnalysis.collectIndirectGlobalsInFunction();
 
 	cout << endl << "All Global Vars:" << endl;
-	for (std::vector<Variable>::iterator it = gvAnalysis.listOfGlobalVars.begin();
-			it != gvAnalysis.listOfGlobalVars.end(); it++) {
-		cout << it->varName << endl;
+	for (std::vector<Variable>::iterator it = gvAnalysis.listOfGlobalVars.begin(); it != gvAnalysis.listOfGlobalVars.end(); it++) {
+		cout << it->varName << ",";
 	}
 
-	cout << endl << "All Functions:" << endl;
-	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin();
-			it != gvAnalysis.listOfFunctions.end(); it++) {
+	cout << endl<<endl << "All Functions:" << endl;
+	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
 		cout << it->fId << endl;
 	}
 
-	cout << endl << "Function to Globals Map:" << endl;
+	cout << endl << "Call Graph:" << endl;
 	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
-		cout<<it->fId<<" : ";
-		set<Variable> svars = gvAnalysis.globalsInFunctions[*it];
-		for (std::set<Variable>::iterator it2 = svars.begin(); it2 != svars.end(); it2++) {
-			cout<<it2->varName<<", ";
+		cout << it->fId << " : ";
+		set<Function> sCallees = gvAnalysis.callGraph[*it];
+		for (std::set<Function>::iterator it2 = sCallees.begin(); it2 != sCallees.end(); it2++) {
+			cout << it2->fId << ", ";
 		}
-		cout<<endl;
+		cout << endl;
+	}
+
+	cout << endl << "Reachabilities:" << endl;
+	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
+		cout << it->fId << " : ";
+		set<Function> reachableFunctions = gvAnalysis.reachabilities[*it];
+		for (std::set<Function>::iterator it2 = reachableFunctions.begin(); it2 != reachableFunctions.end(); it2++) {
+			cout << it2->fId << ", ";
+		}
+		cout << endl;
+	}
+
+	cout << endl << "Function to Direct Globals Map:" << endl;
+	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
+		cout << it->fId << " : ";
+		set<Variable> svars = gvAnalysis.directGlobalsInFunctions[*it];
+		for (std::set<Variable>::iterator it2 = svars.begin(); it2 != svars.end(); it2++) {
+			cout << it2->varName << ", ";
+		}
+		cout << endl;
+	}
+
+	cout << endl << "Function to Indirect Globals Map:" << endl;
+	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
+		cout << it->fId << " : ";
+		set<Variable> svars = gvAnalysis.indirectGlobalsInFunctions[*it];
+		for (std::set<Variable>::iterator it2 = svars.begin(); it2 != svars.end(); it2++) {
+			cout << it2->varName << ", ";
+		}
+		cout << endl;
 	}
 
 	return 0;

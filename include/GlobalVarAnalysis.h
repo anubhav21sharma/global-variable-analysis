@@ -29,13 +29,18 @@ class GlobalVarAnalysis {
 public:
 	std::vector<Variable> listOfGlobalVars;
 	std::vector<Function> listOfFunctions;
-	std::map<Function, std::set<Variable> > globalsInFunctions;
+	std::map<Function, std::set<Variable> > directGlobalsInFunctions;
+	std::map<Function, std::set<Variable> > indirectGlobalsInFunctions;
+	std::map<Function, std::set<Function> > callGraph;
+	std::map<Function, std::set<Function> > reachabilities;
 	GlobalVarAnalysis();
 	void collectAllGlobals();
 	void populateFunctionIDs();
-	void collectGlobalsInFunction();
+	void findReachabilities();
+	void collectDirectGlobalsInFunction();
+	void collectIndirectGlobalsInFunction();
 	bool isGlobal(tree);
-
+	bool isBuiltInFunction(struct cgraph_node*);
 	virtual ~GlobalVarAnalysis();
 };
 
