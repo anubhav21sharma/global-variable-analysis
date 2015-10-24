@@ -25,13 +25,14 @@ bool GlobalVarAnalysis::isGlobal(tree v) {
 bool GlobalVarAnalysis::isBuiltInFunction(struct cgraph_node *node) {
 	//TODO: Check whether function is a builtin
 	//return DECL_IS_BUILTIN(node->decl);
-	return true;
+	return false;
 }
 
 GlobalVarAnalysis::~GlobalVarAnalysis() {
 }
 
 void GlobalVarAnalysis::collectAllGlobals() {
+
 	struct varpool_node *node;
 	for (node = varpool_nodes; node; node = node->next) {
 		tree tVar = node->decl;
@@ -51,7 +52,7 @@ void GlobalVarAnalysis::populateFunctionIDs() {
 		if (!gimple_has_body_p(node->decl) || node->clone_of) {
 			continue;
 		}
-		if (isBuiltInFunction(node)) {
+		if (!isBuiltInFunction(node)) {
 			string fid = string(cgraph_node_name(node));
 			Function f(fid, node);
 			listOfFunctions.push_back(f);
@@ -117,10 +118,19 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 						Variable v(varToString(varRHS), varRHS);
 						directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 					}
+				} else if (gimple_code(curStmt) == GIMPLE_SWITCH) {
+					int numOps = gimple_num_ops(curStmt);
+					while (numOps--) {
+						tree var = gimple_op(curStmt, numOps);
+						if (isGlobal(var)) {
+							Variable v(varToString(var), var);
+							directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+						}
+					}
 				} else {
 					cerr << "Unhandled statement : " << "\t";
 					print_gimple_stmt(stderr, curStmt, 0, 0);
-					//cerr <<"\t File : "<<gimple_filename(curStmt)<<" Line : "<<gimple_lineno(curStmt)<<endl;
+					cerr << "\t File : " << gimple_filename(curStmt) << " Line : " << gimple_lineno(curStmt) << endl;
 					cerr.flush();
 
 				}
@@ -133,15 +143,15 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 }
 
 void GlobalVarAnalysis::collectIndirectGlobalsInFunction() {
-	for(int i=0; i<listOfFunctions.size(); i++){
+	for (int i = 0; i < listOfFunctions.size(); i++) {
 		Function f = listOfFunctions[i];
 		set<Function> fr = reachabilities[f];
 		for (set<Function>::iterator it = fr.begin(); it != fr.end(); it++) {
 			Function g = *it;
-			indirectGlobalsInFunctions[f].insert(directGlobalsInFunctions[g].begin(),directGlobalsInFunctions[g].end());
+			indirectGlobalsInFunctions[f].insert(directGlobalsInFunctions[g].begin(), directGlobalsInFunctions[g].end());
 		}
 		for (set<Variable>::iterator it = indirectGlobalsInFunctions[f].begin(); it != indirectGlobalsInFunctions[f].end(); it++) {
-			if(directGlobalsInFunctions[f].find(*it) != directGlobalsInFunctions[f].end()){
+			if (directGlobalsInFunctions[f].find(*it) != directGlobalsInFunctions[f].end()) {
 				indirectGlobalsInFunctions[f].erase(*it);
 			}
 		}
@@ -171,7 +181,6 @@ void GlobalVarAnalysis::findReachabilities() {
 		}
 	}
 
-	//TODO: Might be wrong. Confirm.
 	for (int i = 0; i < n; i++) {
 		Function f = listOfFunctions[i];
 		for (int j = 0; j < n; j++) {

@@ -2,7 +2,9 @@
  *  "gcc-plugin.h" must be the FIRST file to be included 
  *-----------------------------------------------------------------------------*/
 
+#include "../src/Points_to4.hpp"
 #include "gcc-plugin.h"
+
 #include "tree.h"
 #include "basic-block.h"
 #include "tree-ssa-alias.h"
@@ -14,7 +16,7 @@
 #include "../include/GlobalVarAnalysis.h"
 
 #include <iostream>
-
+extern Allptsinfo execute_ipacs();
 using namespace std;
 
 /* global declarations */
@@ -79,11 +81,11 @@ extern int plugin_init(struct plugin_name_args* plugin_info, struct plugin_gcc_v
  The main driver function to perform analysis.
  ---------------------------------------------*/
 static unsigned int execute_gimple_manipulation(void) {
-
+	FILE *tempDump = fopen("tempDump", "w");
 	if (!dump_file) {
-		//dump_file = stdout;
+		dump_file = tempDump;
 	}
-	//dump_file = stdout;
+
 	GlobalVarAnalysis gvAnalysis;
 	gvAnalysis.collectAllGlobals();
 	gvAnalysis.populateFunctionIDs();
@@ -96,7 +98,7 @@ static unsigned int execute_gimple_manipulation(void) {
 		cout << it->varName << ",";
 	}
 
-	cout << endl<<endl << "All Functions:" << endl;
+	cout << endl << endl << "All Functions:" << endl;
 	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
 		cout << it->fId << endl;
 	}
@@ -137,6 +139,26 @@ static unsigned int execute_gimple_manipulation(void) {
 		set<Variable> svars = gvAnalysis.indirectGlobalsInFunctions[*it];
 		for (std::set<Variable>::iterator it2 = svars.begin(); it2 != svars.end(); it2++) {
 			cout << it2->varName << ", ";
+		}
+		cout << endl;
+	}
+
+	//Perform Points-t-Analysis
+	cout << endl << "Points-to-Analysis Information:" << endl;
+
+	Allptsinfo allPointsInfo = execute_ipacs();
+	for (map<int, PSet>::iterator it = allPointsInfo.allptinfo.begin(); it != allPointsInfo.allptinfo.end(); it++) {
+		int pointer_id = it->first;
+		csvarinfo_t pointer = VEC_index(csvarinfo_t, csvarmap, pointer_id);
+		tree pvar = pointer->decl;
+		if(!(is_global_var(pvar) && DECL_P(pvar))){
+			continue;
+		}
+		cout << pointer->name << " : ";
+		Pointee_Set pointee_set = it->second.get_st();
+		for (set<int>::iterator it = pointee_set.begin(); it != pointee_set.end(); it++) {
+			csvarinfo_t var = VEC_index(csvarinfo_t, csvarmap, *it);
+			cout << get_name(var->decl) << ", ";
 		}
 		cout << endl;
 	}

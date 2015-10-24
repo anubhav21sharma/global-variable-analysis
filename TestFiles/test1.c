@@ -1,30 +1,23 @@
 #include <stdio.h>
 
-int ga,gb,gc;
+int ga, gb, gc;
+int *pga, *pgb, *pgc;
 
-int fn1(int i)
-{
-	printf ("\n in fn1 : %d", i);
+int fn1(int i) {
+	return 0;
 }
 
-int fn2(int i)
-{
-	printf ("\n in fn2 : %d", i);
-	fn1 (5);
+int fn2(int i) {
+	return fn1(0);
 }
 
-
-int main()
-{
-	int n, a, b, c, d;
-	a = b + c;
-	a = a * d;
-	if (n)
-		n = n - a;
-	else
-		n = n + a;
-
-	fn1 (n-6);
-	fn2 (n+7);
+int main() {
+	switch(gb){
+	case 1:
+		return gc;
+	case 2:
+		break;
+	}
+	return ga;
 }
 
