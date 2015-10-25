@@ -5,11 +5,14 @@
  *      Author: anubhav
  */
 
+#include "../src/Points_to4.hpp"
 #include "../include/GlobalVarAnalysis.h"
 #include <sstream>
 #include "../include/Common.h"
+#include "../src/parser.hpp"
 
 using namespace std;
+extern Allptsinfo execute_ipacs();
 
 #define intToString(x) dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x ) ).str()
 
@@ -29,6 +32,26 @@ bool GlobalVarAnalysis::isBuiltInFunction(struct cgraph_node *node) {
 }
 
 GlobalVarAnalysis::~GlobalVarAnalysis() {
+}
+
+void GlobalVarAnalysis::collectPointsToInformation() {
+	Allptsinfo allPointsInfo = execute_ipacs();
+	for (map<int, PSet>::iterator it = allPointsInfo.allptinfo.begin(); it != allPointsInfo.allptinfo.end(); it++) {
+		int pointer_id = it->first;
+		csvarinfo_t pointer = VEC_index(csvarinfo_t, csvarmap, pointer_id);
+		tree pvar = pointer->decl;
+		if (!(is_global_var(pvar) && DECL_P(pvar))) {
+			//continue;
+		}
+		Variable key(string(pointer->name), pvar);
+
+		Pointee_Set pointee_set = it->second.get_st();
+		for (set<int>::iterator it = pointee_set.begin(); it != pointee_set.end(); it++) {
+			csvarinfo_t var = VEC_index(csvarinfo_t, csvarmap, *it);
+			Variable pointee(get_name(var->decl), var->decl);
+			pointsToInformation[key].insert(pointee);
+		}
+	}
 }
 
 void GlobalVarAnalysis::collectAllGlobals() {
@@ -67,6 +90,16 @@ void GlobalVarAnalysis::populateFunctionIDs() {
 	}
 }
 
+/*
+ * if(OPi is a pointer){
+ * 		if(OPi is dereferenced){
+ * 			add OPi, A(OPi);
+ * 		}else{
+ * 			add OPi;
+ * 		}
+ * }
+ */
+// How to find names of vars *px;
 void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 	for (int i = 0; i < listOfFunctions.size(); i++) {
 		struct cgraph_node *node = listOfFunctions[i].fNode;
@@ -78,15 +111,58 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 			for (gsi = gsi_start_bb(bb); !gsi_end_p(gsi); gsi_next(&gsi)) {
 				gimple curStmt = gsi_stmt(gsi);
 				if (gimple_code(curStmt) == GIMPLE_ASSIGN) {
+					cout << "\nStatement:";
+					print_gimple_stmt(stdout, curStmt, 0, 0);
 					int numOps = gimple_num_ops(curStmt);
 					while (numOps--) {
 						tree var = gimple_op(curStmt, numOps);
-						if (true/*TREE_CODE(var) != INTEGER_CST || TREE_CODE(var) == VAR_DECL || TREE_CODE(var) == SSA_NAME || TREE_CODE(var) == PARM_DECL*/) {
-							if (isGlobal(var)) {
-								Variable v(varToString(var), var);
-								directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+						cout << "Var=" << varToString(var) << endl;
+						cout << "isGlobal = " << isGlobal(var) << endl;
+						if (isGlobal(var)) {
+							//If pointer is a global variable. (Seems like this case won't happen)
+							string varName = varToString(var);
+							if (TREE_CODE(var) == MEM_REF || TREE_CODE(var) == TARGET_MEM_REF || TREE_CODE(var) == ARRAY_REF) {
+								tree deref = TREE_OPERAND(var, 0);
+								varName = varToString(deref);
+								var = deref;
+								cout << "GVar=" << varName << endl;
+							}
+							Variable v(varName, var);
+							directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+						} else {
+							//Check whether variable is a pointer and add globals from pointee set.
+							string varName = varToString(var);
+							if (TREE_CODE(var) == MEM_REF || TREE_CODE(var) == TARGET_MEM_REF) {
+								tree deref = TREE_OPERAND(var, 0);
+								deref = SSA_NAME_VAR(deref);
+								varName = varToString(deref);
+								Variable pointer(varName, deref);
+								set<Variable> pointees = pointsToInformation[pointer];
+
+								for (std::set<Variable>::iterator it = pointees.begin(); it != pointees.end(); it++) {
+									if (isGlobal(it->varTree)) {
+										directGlobalsInFunctions[listOfFunctions[i]].insert(*it);
+									}
+								}
+//									cout << "Var=" << varName << endl;
+							} else if (TREE_CODE(var) == ADDR_EXPR) {
+								tree deref = TREE_OPERAND(var, 0);
+								varName = varToString(deref);
+								Variable v(varName, deref);
+								if (isGlobal(deref)) {
+									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+								}
+//									cout << "Var=" << varName << endl;
+							} else if (TREE_CODE(var) == ARRAY_REF) {
+								tree deref = TREE_OPERAND(var, 0);
+								varName = varToString(deref);
+								Variable v(varName, deref);
+								if (isGlobal(deref)) {
+									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+								}
 							}
 						}
+
 					}
 				} else if (gimple_code(curStmt) == GIMPLE_CALL) {
 					int nArgs = gimple_call_num_args(curStmt);
@@ -128,10 +204,10 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 						}
 					}
 				} else {
-					cerr << "Unhandled statement : " << "\t";
-					print_gimple_stmt(stderr, curStmt, 0, 0);
-					cerr << "\t File : " << gimple_filename(curStmt) << " Line : " << gimple_lineno(curStmt) << endl;
-					cerr.flush();
+//					cerr << "Unhandled statement : " << "\t";
+//					print_gimple_stmt(stderr, curStmt, 0, 0);
+//					cerr << "\t File : " << gimple_filename(curStmt) << " Line : " << gimple_lineno(curStmt) << endl;
+//					cerr.flush();
 
 				}
 			}
@@ -192,3 +268,37 @@ void GlobalVarAnalysis::findReachabilities() {
 
 }
 
+/*//
+ //								tree type = TREE_TYPE(var);
+ //								cout << "Type of Var = " << varToString(var) << ": " << TREE_CODE(type) << endl;
+ //								cout << "Code of Var = " << varToString(var) << ": " << TREE_CODE(var) << endl;
+ //								if (TREE_CODE(var) == MEM_REF) {
+ //									cout << "*" << varToString(var) << endl;
+ //								}
+ cout << "\nStatement:";
+ print_gimple_stmt(stdout, curStmt, 0, 0);
+ constraint_t con;
+ int lhs_type, rhs_type;
+ int lhs_var_id, rhs_var_id;
+ for (int i = 0;
+ i < VEC_length(constraint_t, aliases);
+ i++) {
+ con = VEC_index(constraint_t, aliases, i);
+
+ lhs_type = con->lhs.type;
+ rhs_type = con->rhs.type;
+ lhs_var_id = con->lhs.var;
+ rhs_var_id = con->rhs.var;
+
+ csvarinfo_t lhs_pointer = VEC_index(csvarinfo_t, csvarmap, con->lhs.var);
+ csvarinfo_t rhs_pointer = VEC_index(csvarinfo_t, csvarmap, con->rhs.var);
+ if (1) {
+ cout << "lhs->decl " << varToString(lhs_pointer->decl) << endl;
+ cout << "lhsTree " << varToString(lhsTree) << endl;
+ cout << "LHS NAME =" << lhs_pointer->name << endl;
+ cout << "RHS NAME =" << rhs_pointer->name << endl;
+ //cout << "TYPE = " << lhs_type << "," << rhs_type << endl;
+ }
+
+ }
+ //*/

@@ -1,4 +1,4 @@
-BASE_DIR =/home/test/GCC
+BASE_DIR =/mnt/Acer/GCC
 INSTALL = $(BASE_DIR)/install
 CC = $(INSTALL)/bin/g++
 
@@ -53,9 +53,8 @@ all:	plugin.so
 plugin.so: $(PLUGIN_HEADER_FILES) $(PLUGIN_OBJECT_FILES) $(PTA_OBJS)
 	$(CC) $(INCLUDE) $(FLAGS) -shared $^ -o $@
 
-TEST=../TestFiles/test1
-test: plugin.so 
-	$(CC) -fplugin=./plugin.so $(TEST).c -fdump-ipa-all -O0 -fipa-pta -fno-inline
+test%: plugin.so 
+	$(CC) -fplugin=./plugin.so ../TestFiles/$@.c -fdump-ipa-all -O0 -fipa-pta -fno-inline
 
 clean:
 	\rm -f plugin.so test *.c.* *~ *.o a.out

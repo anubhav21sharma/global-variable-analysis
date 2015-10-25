@@ -2,7 +2,6 @@
  *  "gcc-plugin.h" must be the FIRST file to be included 
  *-----------------------------------------------------------------------------*/
 
-#include "../src/Points_to4.hpp"
 #include "gcc-plugin.h"
 
 #include "tree.h"
@@ -16,7 +15,6 @@
 #include "../include/GlobalVarAnalysis.h"
 
 #include <iostream>
-extern Allptsinfo execute_ipacs();
 using namespace std;
 
 /* global declarations */
@@ -87,6 +85,7 @@ static unsigned int execute_gimple_manipulation(void) {
 	}
 
 	GlobalVarAnalysis gvAnalysis;
+	gvAnalysis.collectPointsToInformation();
 	gvAnalysis.collectAllGlobals();
 	gvAnalysis.populateFunctionIDs();
 	gvAnalysis.findReachabilities();
@@ -145,22 +144,13 @@ static unsigned int execute_gimple_manipulation(void) {
 
 	//Perform Points-t-Analysis
 	cout << endl << "Points-to-Analysis Information:" << endl;
-
-	Allptsinfo allPointsInfo = execute_ipacs();
-	for (map<int, PSet>::iterator it = allPointsInfo.allptinfo.begin(); it != allPointsInfo.allptinfo.end(); it++) {
-		int pointer_id = it->first;
-		csvarinfo_t pointer = VEC_index(csvarinfo_t, csvarmap, pointer_id);
-		tree pvar = pointer->decl;
-		if(!(is_global_var(pvar) && DECL_P(pvar))){
-			continue;
+	for (std::map<Variable, std::set<Variable> >::iterator it = gvAnalysis.pointsToInformation.begin(); it != gvAnalysis.pointsToInformation.end(); it++) {
+		cout << it->first.varName << " : ";
+		set<Variable> pointees = it->second;
+		for (std::set<Variable>::iterator it2 = pointees.begin(); it2 != pointees.end(); it2++) {
+			cout << it2->varName << ", ";
 		}
-		cout << pointer->name << " : ";
-		Pointee_Set pointee_set = it->second.get_st();
-		for (set<int>::iterator it = pointee_set.begin(); it != pointee_set.end(); it++) {
-			csvarinfo_t var = VEC_index(csvarinfo_t, csvarmap, *it);
-			cout << get_name(var->decl) << ", ";
-		}
-		cout << endl;
+		cout<<endl;
 	}
 
 	return 0;

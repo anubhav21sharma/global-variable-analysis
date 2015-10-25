@@ -31,6 +31,7 @@ public:
 	std::vector<Function> listOfFunctions;
 	std::map<Function, std::set<Variable> > directGlobalsInFunctions;
 	std::map<Function, std::set<Variable> > indirectGlobalsInFunctions;
+	std::map<Variable, std::set<Variable> > pointsToInformation;
 	std::map<Function, std::set<Function> > callGraph;
 	std::map<Function, std::set<Function> > reachabilities;
 	GlobalVarAnalysis();
@@ -39,6 +40,7 @@ public:
 	void findReachabilities();
 	void collectDirectGlobalsInFunction();
 	void collectIndirectGlobalsInFunction();
+	void collectPointsToInformation();
 	bool isGlobal(tree);
 	bool isBuiltInFunction(struct cgraph_node*);
 	virtual ~GlobalVarAnalysis();

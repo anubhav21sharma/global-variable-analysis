@@ -2,22 +2,26 @@
 
 int ga, gb, gc;
 int *pga, *pgb, *pgc;
+int **ppga, **ppgb, **ppgc;
+int garr[100];
 
-int fn1(int i) {
-	return 0;
-}
-
-int fn2(int i) {
-	return fn1(0);
+int f(int x) {
+	pga = &ga;
+	pgb = &gb;
+	garr[3] = 10;
+	int larr[10];
+	larr[0] = 10;
+	return *pgc;
 }
 
 int main() {
-	switch(gb){
-	case 1:
-		return gc;
-	case 2:
-		break;
+	if(*pga > garr[1]){
+		f(3);
+		int i;
+		//garr[i] = 10;
 	}
-	return ga;
+
+
+	return 0;
 }
 

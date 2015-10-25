@@ -46,6 +46,9 @@ string stmtToString(gimple stmt) {
 
 std::string varToString(tree node) {
 
+	if(node==NULL){
+		return "NULL";
+	}
 	char* name = new char[40];
 	tree var_decl_node = node;
 
