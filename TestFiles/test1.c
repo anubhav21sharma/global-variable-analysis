@@ -5,13 +5,18 @@ int *pga, *pgb, *pgc;
 int **ppga, **ppgb, **ppgc;
 int garr[100];
 
+int g(){
+	pgc = &gc;
+}
+
 int f(int x) {
 	pga = &ga;
 	pgb = &gb;
 	garr[3] = 10;
 	int larr[10];
 	larr[0] = 10;
-	return *pgc;
+	g();
+	return 0;
 }
 
 int main() {

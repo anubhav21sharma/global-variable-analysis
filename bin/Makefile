@@ -57,4 +57,4 @@ test%: plugin.so
 	$(CC) -fplugin=./plugin.so ../TestFiles/$@.c -fdump-ipa-all -O0 -fipa-pta -fno-inline
 
 clean:
-	\rm -f plugin.so test *.c.* *~ *.o a.out
+	\rm -f plugin.so test *.c.* *~ *.o a.out tempDump *.dot
