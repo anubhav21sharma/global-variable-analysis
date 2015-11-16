@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+int xx;
+
 void f();
 void g();
 void h();
@@ -41,4 +43,8 @@ void x() {
 void y() {
 }
 
-
+int main(){
+	int *p;
+	p = &xx;
+	return 0;
+}

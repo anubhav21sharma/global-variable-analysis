@@ -16,6 +16,8 @@ extern Allptsinfo execute_ipacs();
 
 #define intToString(x) dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x ) ).str()
 
+bool printAllStatementInfo = false;
+
 GlobalVarAnalysis::GlobalVarAnalysis() {
 
 }
@@ -111,13 +113,17 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 			for (gsi = gsi_start_bb(bb); !gsi_end_p(gsi); gsi_next(&gsi)) {
 				gimple curStmt = gsi_stmt(gsi);
 				if (gimple_code(curStmt) == GIMPLE_ASSIGN) {
-					cout << "\nStatement:";
-					print_gimple_stmt(stdout, curStmt, 0, 0);
+					if (printAllStatementInfo) {
+						cout << "\nStatement:";
+						print_gimple_stmt(stdout, curStmt, 0, 0);
+					}
 					int numOps = gimple_num_ops(curStmt);
 					while (numOps--) {
 						tree var = gimple_op(curStmt, numOps);
-						cout << "Var=" << varToString(var) << endl;
-						cout << "isGlobal = " << isGlobal(var) << endl;
+						if (printAllStatementInfo) {
+							cout << "Var=" << varToString(var) << endl;
+							cout << "isGlobal = " << isGlobal(var) << endl;
+						}
 						if (isGlobal(var)) {
 							//If pointer is a global variable. (Seems like this case won't happen)
 							string varName = varToString(var);
@@ -125,7 +131,9 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 								tree deref = TREE_OPERAND(var, 0);
 								varName = varToString(deref);
 								var = deref;
-								cout << "GVar=" << varName << endl;
+								if (printAllStatementInfo) {
+									cout << "GVar=" << varName << endl;
+								}
 							}
 							Variable v(varName, var);
 							directGlobalsInFunctions[listOfFunctions[i]].insert(v);
@@ -204,11 +212,13 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 						}
 					}
 				} else {
-//					cerr << "Unhandled statement : " << "\t";
-//					print_gimple_stmt(stderr, curStmt, 0, 0);
-//					cerr << "\t File : " << gimple_filename(curStmt) << " Line : " << gimple_lineno(curStmt) << endl;
-//					cerr.flush();
+					if (gimple_code(curStmt) == GIMPLE_LABEL || gimple_code(curStmt) == GIMPLE_ASM || gimple_code(curStmt) == GIMPLE_NOP || gimple_code(curStmt) == GIMPLE_RESX) {
 
+					} else {
+						cout << "Unhandled statement : " << "\t";
+						print_gimple_stmt(stdout, curStmt, 0, 0);
+						//cout << "\t File : " << gimple_filename(curStmt) << " Line : " << gimple_lineno(curStmt) << endl;
+					}
 				}
 			}
 		}
@@ -246,7 +256,8 @@ void GlobalVarAnalysis::findReachabilities() {
 		set<Function> callees = callGraph[listOfFunctions[i]];
 		for (set<Function>::iterator it = callees.begin(); it != callees.end(); it++) {
 			int j = linearSearch(listOfFunctions, *it);
-			adjM[i][j] = true;
+			if (j != -1)
+				adjM[i][j] = true;
 		}
 	}
 	for (int k = 0; k < n; k++) {

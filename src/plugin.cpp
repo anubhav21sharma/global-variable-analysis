@@ -79,9 +79,11 @@ extern int plugin_init(struct plugin_name_args* plugin_info, struct plugin_gcc_v
  The main driver function to perform analysis.
  ---------------------------------------------*/
 static unsigned int execute_gimple_manipulation(void) {
+	breakPointMethod();
 	FILE *tempDump = fopen("tempDump", "w");
 	if (!dump_file) {
-		dump_file = tempDump;
+		cerr << "Need to provide -fdump-ipa-all as switch." << endl;
+		//dump_file = tempDump;
 	}
 
 	GlobalVarAnalysis gvAnalysis;
@@ -97,14 +99,14 @@ static unsigned int execute_gimple_manipulation(void) {
 		cout << it->varName << ",";
 	}
 
-	cout << endl << endl << "All Functions:" << endl;
+	cout << endl << "All Functions:" << endl;
 	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
-		cout << it->fId << endl;
+		cout << "\t" << it->fId << endl;
 	}
 
 	cout << endl << "Call Graph:" << endl;
 	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
-		cout << it->fId << " : ";
+		cout << "\t" << it->fId << " : ";
 		set<Function> sCallees = gvAnalysis.callGraph[*it];
 		for (std::set<Function>::iterator it2 = sCallees.begin(); it2 != sCallees.end(); it2++) {
 			cout << it2->fId << ", ";
@@ -114,7 +116,7 @@ static unsigned int execute_gimple_manipulation(void) {
 
 	cout << endl << "Reachabilities:" << endl;
 	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
-		cout << it->fId << " : ";
+		cout << "\t" << it->fId << " : ";
 		set<Function> reachableFunctions = gvAnalysis.reachabilities[*it];
 		for (std::set<Function>::iterator it2 = reachableFunctions.begin(); it2 != reachableFunctions.end(); it2++) {
 			cout << it2->fId << ", ";
@@ -124,7 +126,7 @@ static unsigned int execute_gimple_manipulation(void) {
 
 	cout << endl << "Function to Direct Globals Map:" << endl;
 	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
-		cout << it->fId << " : ";
+		cout << "\t" << it->fId << " : ";
 		set<Variable> svars = gvAnalysis.directGlobalsInFunctions[*it];
 		for (std::set<Variable>::iterator it2 = svars.begin(); it2 != svars.end(); it2++) {
 			cout << it2->varName << ", ";
@@ -134,7 +136,7 @@ static unsigned int execute_gimple_manipulation(void) {
 
 	cout << endl << "Function to Indirect Globals Map:" << endl;
 	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
-		cout << it->fId << " : ";
+		cout << "\t" << it->fId << " : ";
 		set<Variable> svars = gvAnalysis.indirectGlobalsInFunctions[*it];
 		for (std::set<Variable>::iterator it2 = svars.begin(); it2 != svars.end(); it2++) {
 			cout << it2->varName << ", ";
@@ -145,13 +147,13 @@ static unsigned int execute_gimple_manipulation(void) {
 	//Perform Points-t-Analysis
 	cout << endl << "Points-to-Analysis Information:" << endl;
 	for (std::map<Variable, std::set<Variable> >::iterator it = gvAnalysis.pointsToInformation.begin(); it != gvAnalysis.pointsToInformation.end(); it++) {
-		cout << it->first.varName << " : ";
+		cout << "\t" << it->first.varName << " : ";
 		set<Variable> pointees = it->second;
 		for (std::set<Variable>::iterator it2 = pointees.begin(); it2 != pointees.end(); it2++) {
 			cout << it2->varName << ", ";
 		}
-		cout<<endl;
+		cout << endl;
 	}
-
+	//fclose(tempDump);
 	return 0;
 }

@@ -19,7 +19,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="run"/>
 <booleanAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN" value="true"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="breakPointMethod"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-fplugin=./plugin.so -c ../TestFiles/test3.c -O0 -fipa-pta -fno-inline"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-fplugin=./plugin.so -c ../TestFiles/test3.c -O0 -fipa-pta -fno-inline -g3 -fdump-ipa-all"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="/mnt/Acer/GCC/install/bin/g++"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="pa-project"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>

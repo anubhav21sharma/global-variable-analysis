@@ -2954,6 +2954,8 @@ void call_process_inputs(Allptsinfo & obj_allptinfo) {
 Allptsinfo execute_ipacs(void) {
 	Allptsinfo obj_allptinfo;
 	if (!in_lto_p) {
+		cerr << "in_lto_p is not set." << endl;
+		return Allptsinfo();
 		//return 0;
 	}
 
