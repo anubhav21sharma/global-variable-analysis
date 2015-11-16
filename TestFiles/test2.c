@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 int xx;
+int *pxx;
 
 void f();
 void g();
@@ -34,6 +35,8 @@ void h() {
 }
 
 void k() {
+	pxx = &xx;
+	*pxx = 5;
 }
 
 void x() {
@@ -46,5 +49,6 @@ void y() {
 int main(){
 	int *p;
 	p = &xx;
+	k();
 	return 0;
 }

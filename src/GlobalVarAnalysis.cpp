@@ -38,22 +38,36 @@ GlobalVarAnalysis::~GlobalVarAnalysis() {
 
 void GlobalVarAnalysis::collectPointsToInformation() {
 	Allptsinfo allPointsInfo = execute_ipacs();
-	for (map<int, PSet>::iterator it = allPointsInfo.allptinfo.begin(); it != allPointsInfo.allptinfo.end(); it++) {
+	/*for (map<int, PSet>::iterator it = allPointsInfo.allptinfo.begin(); it != allPointsInfo.allptinfo.end(); it++) {
 		int pointer_id = it->first;
 		csvarinfo_t pointer = VEC_index(csvarinfo_t, csvarmap, pointer_id);
 		tree pvar = pointer->decl;
+		if (pvar == NULL)
+			continue;
 		if (!(is_global_var(pvar) && DECL_P(pvar))) {
 			//continue;
+		}
+		if(pointer->name == NULL){
+			//Should not happen
+			continue;
 		}
 		Variable key(string(pointer->name), pvar);
 
 		Pointee_Set pointee_set = it->second.get_st();
 		for (set<int>::iterator it = pointee_set.begin(); it != pointee_set.end(); it++) {
 			csvarinfo_t var = VEC_index(csvarinfo_t, csvarmap, *it);
-			Variable pointee(get_name(var->decl), var->decl);
+			if (var->decl == NULL)
+				continue;
+			string varName;
+			if(get_name(var->decl) == NULL){
+				//Should not happen
+				continue;
+			}
+			varName = string(get_name(var->decl));
+			Variable pointee(varName, var->decl);
 			pointsToInformation[key].insert(pointee);
 		}
-	}
+	}*/
 }
 
 void GlobalVarAnalysis::collectAllGlobals() {
@@ -142,7 +156,7 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 							string varName = varToString(var);
 							if (TREE_CODE(var) == MEM_REF || TREE_CODE(var) == TARGET_MEM_REF) {
 								tree deref = TREE_OPERAND(var, 0);
-								deref = SSA_NAME_VAR(deref);
+								//deref = SSA_NAME_VAR(deref);
 								varName = varToString(deref);
 								Variable pointer(varName, deref);
 								set<Variable> pointees = pointsToInformation[pointer];

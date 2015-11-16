@@ -2954,11 +2954,11 @@ void call_process_inputs(Allptsinfo & obj_allptinfo) {
 Allptsinfo execute_ipacs(void) {
 	Allptsinfo obj_allptinfo;
 	if (!in_lto_p) {
-		cerr << "in_lto_p is not set." << endl;
+		cerr << "in_lto_p is NOT set." << endl;
 		return Allptsinfo();
 		//return 0;
 	}
-
+	cerr << "in_lto_p IS set." << endl;
 	//dump_file = stdout;
 
 	struct function *old_cfun = cfun;

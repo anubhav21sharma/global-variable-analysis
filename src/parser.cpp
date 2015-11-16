@@ -3516,6 +3516,10 @@ void get_pred_count(struct cgraph_node *cnode)
 
 void get_total_cnodes(struct cgraph_node *cnode)
 {
+	//ADDED: anubhav
+	if(!cnode)
+		return;
+
 	struct cgraph_edge *edge;
 	struct cgraph_node *node;
 

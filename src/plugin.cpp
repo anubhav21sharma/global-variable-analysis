@@ -83,7 +83,7 @@ static unsigned int execute_gimple_manipulation(void) {
 	FILE *tempDump = fopen("tempDump", "w");
 	if (!dump_file) {
 		cerr << "Need to provide -fdump-ipa-all as switch." << endl;
-		//dump_file = tempDump;
+		dump_file = tempDump;
 	}
 
 	GlobalVarAnalysis gvAnalysis;
