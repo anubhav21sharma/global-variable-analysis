@@ -119,7 +119,7 @@ static unsigned int execute_gimple_manipulation(void) {
 			fprintf(dump_file, "%s, ", it2->fId.c_str());
 		}
 		cout << endl;
-		fprintf(dump_file,"\n");
+		fprintf(dump_file, "\n");
 	}
 
 	cout << endl << "Reachabilities:" << endl;
@@ -133,7 +133,7 @@ static unsigned int execute_gimple_manipulation(void) {
 			fprintf(dump_file, "%s, ", it2->fId.c_str());
 		}
 		cout << endl;
-		fprintf(dump_file,"\n");
+		fprintf(dump_file, "\n");
 	}
 
 	cout << endl << "Function to Direct Globals Map:" << endl;
@@ -147,7 +147,7 @@ static unsigned int execute_gimple_manipulation(void) {
 			fprintf(dump_file, "%s, ", it2->varName.c_str());
 		}
 		cout << endl;
-		fprintf(dump_file,"\n");
+		fprintf(dump_file, "\n");
 	}
 
 	cout << endl << "Function to Indirect Globals Map:" << endl;
@@ -161,7 +161,21 @@ static unsigned int execute_gimple_manipulation(void) {
 			fprintf(dump_file, "%s, ", it2->varName.c_str());
 		}
 		cout << endl;
-		fprintf(dump_file,"\n");
+		fprintf(dump_file, "\n");
+	}
+
+	cout << endl << "Function to Direct and Indirect Globals Map:" << endl;
+	fprintf(dump_file, "\nFunction to Direct and Indirect Globals Map:\n");
+	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
+		cout << "\t" << it->fId << " : ";
+		fprintf(dump_file, "\t%s : ", it->fId.c_str());
+		set<Variable> svars = gvAnalysis.directAndIndirectGlobalsInFunctions[*it];
+		for (std::set<Variable>::iterator it2 = svars.begin(); it2 != svars.end(); it2++) {
+			cout << it2->varName << ", ";
+			fprintf(dump_file, "%s, ", it2->varName.c_str());
+		}
+		cout << endl;
+		fprintf(dump_file, "\n");
 	}
 
 	//Perform Points-t-Analysis
@@ -176,7 +190,7 @@ static unsigned int execute_gimple_manipulation(void) {
 			fprintf(dump_file, "%s, ", it2->varName.c_str());
 		}
 		cout << endl;
-		fprintf(dump_file,"\n");
+		fprintf(dump_file, "\n");
 	}
 	//fclose(tempDump);
 	return 0;

@@ -23,7 +23,6 @@ GlobalVarAnalysis::GlobalVarAnalysis() {
 }
 
 bool GlobalVarAnalysis::isGlobal(tree v) {
-	//TODO: What about const global variables?
 	return is_global_var(v) && DECL_P(v);
 }
 
@@ -47,7 +46,7 @@ void GlobalVarAnalysis::collectPointsToInformation() {
 		if (!(is_global_var(pvar) && DECL_P(pvar))) {
 			//continue;
 		}
-		if(pointer->name == NULL){
+		if (pointer->name == NULL) {
 			//Should not happen
 			continue;
 		}
@@ -59,7 +58,7 @@ void GlobalVarAnalysis::collectPointsToInformation() {
 			if (var->decl == NULL)
 				continue;
 			string varName;
-			if(get_name(var->decl) == NULL){
+			if (get_name(var->decl) == NULL) {
 				//Should not happen
 				continue;
 			}
@@ -107,15 +106,17 @@ void GlobalVarAnalysis::populateFunctionIDs() {
 }
 
 /*
- * if(OPi is a pointer){
+ * if(OPi is a global pointer){
  * 		if(OPi is dereferenced){
  * 			add OPi, A(OPi);
  * 		}else{
  * 			add OPi;
  * 		}
+ * }else if(OPi is a local pointer){
+ * 		add(all p in A(OPi) such that p is global);
  * }
  */
-// How to find names of vars *px;
+
 void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 	for (int i = 0; i < listOfFunctions.size(); i++) {
 		struct cgraph_node *node = listOfFunctions[i].fNode;
@@ -145,8 +146,8 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 								tree deref = TREE_OPERAND(var, 0);
 								varName = varToString(deref);
 								var = deref;
-								if (printAllStatementInfo) {
-									cout << "GVar=" << varName << endl;
+								if (1 || printAllStatementInfo) {
+									cout << "Pointer is Global = " << varName << endl;
 								}
 							}
 							Variable v(varName, var);
@@ -163,6 +164,7 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 
 								for (std::set<Variable>::iterator it = pointees.begin(); it != pointees.end(); it++) {
 									if (isGlobal(it->varTree)) {
+										cout << "Adding global pointee = " << it->varName << endl;
 										directGlobalsInFunctions[listOfFunctions[i]].insert(*it);
 									}
 								}
@@ -172,6 +174,7 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 								varName = varToString(deref);
 								Variable v(varName, deref);
 								if (isGlobal(deref)) {
+									cout << "Adding global pointee = " << varName << endl;
 									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 								}
 //									cout << "Var=" << varName << endl;
@@ -180,6 +183,7 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 								varName = varToString(deref);
 								Variable v(varName, deref);
 								if (isGlobal(deref)) {
+									cout << "Adding global pointee = " << varName << endl;
 									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 								}
 							}
@@ -196,7 +200,6 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 						}
 					}
 				} else if (gimple_code(curStmt) == GIMPLE_RETURN) {
-					//TODO: This condition does not seem to be doing anything.
 					int nArgs = gimple_call_num_args(curStmt);
 					if (nArgs == 1) {
 						tree arg = gimple_call_arg(curStmt, nArgs);
@@ -229,8 +232,8 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 					if (gimple_code(curStmt) == GIMPLE_LABEL || gimple_code(curStmt) == GIMPLE_ASM || gimple_code(curStmt) == GIMPLE_NOP || gimple_code(curStmt) == GIMPLE_RESX) {
 
 					} else {
-						cout << "Unhandled statement : " << "\t";
-						print_gimple_stmt(stdout, curStmt, 0, 0);
+						//cout << "Unhandled statement : " << "\t";
+						//print_gimple_stmt(stdout, curStmt, 0, 0);
 						//cout << "\t File : " << gimple_filename(curStmt) << " Line : " << gimple_lineno(curStmt) << endl;
 					}
 				}
@@ -252,6 +255,7 @@ void GlobalVarAnalysis::collectIndirectGlobalsInFunction() {
 		}
 		for (set<Variable>::iterator it = indirectGlobalsInFunctions[f].begin(); it != indirectGlobalsInFunctions[f].end(); it++) {
 			if (directGlobalsInFunctions[f].find(*it) != directGlobalsInFunctions[f].end()) {
+				directAndIndirectGlobalsInFunctions[f].insert(*it);
 				indirectGlobalsInFunctions[f].erase(*it);
 			}
 		}

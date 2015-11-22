@@ -7,10 +7,10 @@ void f();
 void g();
 void h();
 void i();
-void k();
+int k();
 void j();
 void x();
-void y();
+void y(int);
 
 void f() {
 	g();
@@ -34,19 +34,19 @@ void h() {
 	k();
 }
 
-void k() {
-	pxx = &xx;
-	*pxx = 5;
+int k() {
+	pxx=&xx;
 }
 
 void x() {
-	y();
+	y(1);
 }
 
-void y() {
+void y(int x) {
+
 }
 
-int main(){
+int main() {
 	int *p;
 	p = &xx;
 	k();
