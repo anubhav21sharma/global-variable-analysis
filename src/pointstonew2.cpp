@@ -2968,14 +2968,11 @@ Allptsinfo execute_ipacs(void) {
 
 	preprocess_control_flow_graph();
 	call_process_inputs(obj_allptinfo);
-	fprintf(dump_file, "Printing map:");
-	obj_allptinfo.Display_Map(1);
-	fprintf(dump_file, "Done Printing map:");
-	
-	
-	
-	obj_allptinfo.print_failed_constraints();
-	fprintf(dump_file, "\n\n");
+	//fprintf(dump_file, "Printing map:");
+	//obj_allptinfo.Display_Map(1);
+	//fprintf(dump_file, "Done Printing map:");
+	//obj_allptinfo.print_failed_constraints();
+	//fprintf(dump_file, "\n\n");
 
 	delete_block_aux();
 

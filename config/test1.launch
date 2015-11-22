@@ -19,7 +19,7 @@
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="run"/>
 <booleanAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN" value="false"/>
 <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_STOP_AT_MAIN_SYMBOL" value="plugin_init"/>
-<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-fplugin=./plugin.so -c ../TestFiles/test1.c -O0 -fdump-tree-all -fipa-pta -fno-inline -g3 -fdump-ipa-all -flto -flto-partition=balanced"/>
+<stringAttribute key="org.eclipse.cdt.launch.PROGRAM_ARGUMENTS" value="-fplugin=./plugin.so -c ../TestFiles/test1.c -O0 -fipa-pta -fno-inline -g3 -flto -flto-partition=balanced -fdump-ipa-all"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="/home/test/GCC/install/bin/g++"/>
 <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="pa-project"/>
 <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
