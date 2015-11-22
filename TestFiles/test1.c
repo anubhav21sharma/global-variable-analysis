@@ -2,6 +2,7 @@
 
 int xx;
 int *pxx;
+int yy;
 
 void f();
 void g();
@@ -23,20 +24,23 @@ void g() {
 }
 
 void i() {
+	int loc;
+	pxx = &loc;
 }
 
 void j() {
 	j();
+	*pxx = 10;
 }
 
 void h() {
 	f();
 	k();
+	*pxx=6;
 }
 
 void k() {
-	pxx = &xx;
-	*pxx = 5;
+	pxx = &yy;
 }
 
 void x() {

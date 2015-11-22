@@ -16,7 +16,7 @@ extern Allptsinfo execute_ipacs();
 
 #define intToString(x) dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x ) ).str()
 
-bool printAllStatementInfo = false;
+bool printAllStatementInfo = true;
 
 GlobalVarAnalysis::GlobalVarAnalysis() {
 
@@ -126,17 +126,18 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 			gimple_stmt_iterator gsi;
 			for (gsi = gsi_start_bb(bb); !gsi_end_p(gsi); gsi_next(&gsi)) {
 				gimple curStmt = gsi_stmt(gsi);
+				if (printAllStatementInfo) {
+					cout << "\nStatement:";
+					print_gimple_stmt(stdout, curStmt, 0, 0);
+				}
 				if (gimple_code(curStmt) == GIMPLE_ASSIGN) {
-					if (printAllStatementInfo) {
-						cout << "\nStatement:";
-						print_gimple_stmt(stdout, curStmt, 0, 0);
-					}
 					int numOps = gimple_num_ops(curStmt);
 					while (numOps--) {
 						tree var = gimple_op(curStmt, numOps);
 						if (printAllStatementInfo) {
 							cout << "Var=" << varToString(var) << endl;
 							cout << "isGlobal = " << isGlobal(var) << endl;
+							cout << "code=" << TREE_CODE(var) << endl;
 						}
 						if (isGlobal(var)) {
 							//If pointer is a global variable. (Seems like this case won't happen)
@@ -173,25 +174,27 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 								varName = varToString(deref);
 								Variable v(varName, deref);
 								if (isGlobal(deref)) {
-									//cout << "Adding global pointee = " << varName << endl;
 									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 								}
 //									cout << "Var=" << varName << endl;
 							} else if (TREE_CODE(var) == ARRAY_REF) {
 								tree deref = TREE_OPERAND(var, 0);
+								while (TREE_CODE(deref) == COMPONENT_REF || TREE_CODE(deref) == ARRAY_REF) {
+									deref = TREE_OPERAND(deref, 0);
+								}
 								varName = varToString(deref);
 								Variable v(varName, deref);
 								if (isGlobal(deref)) {
-									//cout << "Adding global pointee = " << varName << endl;
 									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 								}
-							}
-							else if (TREE_CODE(var) == ARRAY_REF) {
+							} else if (TREE_CODE(var) == COMPONENT_REF) {
 								tree deref = TREE_OPERAND(var, 0);
+								while (TREE_CODE(deref) == COMPONENT_REF || TREE_CODE(deref) == ARRAY_REF) {
+									deref = TREE_OPERAND(deref, 0);
+								}
 								varName = varToString(deref);
 								Variable v(varName, deref);
 								if (isGlobal(deref)) {
-									//cout << "Adding global pointee = " << varName << endl;
 									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 								}
 							}
@@ -200,11 +203,36 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 					}
 				} else if (gimple_code(curStmt) == GIMPLE_CALL) {
 					int nArgs = gimple_call_num_args(curStmt);
+
 					while (nArgs--) {
 						tree arg = gimple_call_arg(curStmt, nArgs);
-						if (isGlobal(arg)) {
-							Variable v(varToString(arg), arg);
-							directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+						if (printAllStatementInfo) {
+							cout << "Var=" << varToString(arg) << endl;
+							cout << "isGlobal = " << isGlobal(arg) << endl;
+							cout << "code=" << TREE_CODE(arg) << endl;
+						}
+						if (TREE_CODE(arg) == COMPONENT_REF || TREE_CODE(arg) == ARRAY_REF) {
+							tree deref = TREE_OPERAND(arg, 0);
+							while (TREE_CODE(deref) == COMPONENT_REF || TREE_CODE(deref) == ARRAY_REF) {
+								deref = TREE_OPERAND(deref, 0);
+							}
+							string varName = varToString(deref);
+							Variable v(varName, deref);
+							if (isGlobal(deref)) {
+								directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+							}
+						} else if (TREE_CODE(arg) == ADDR_EXPR) {
+							tree deref = TREE_OPERAND(arg, 0);
+							string varName = varToString(deref);
+							Variable v(varName, deref);
+							if (isGlobal(deref)) {
+								directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+							}
+						} else {
+							if (isGlobal(arg)) {
+								Variable v(varToString(arg), arg);
+								directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+							}
 						}
 					}
 				} else if (gimple_code(curStmt) == GIMPLE_RETURN) {

@@ -28,7 +28,4 @@ int main() {
 	return k();
 }
 
-//TODO:
-//1. Handle switch statements.
-//2. Only iterate user defined functions.
 
