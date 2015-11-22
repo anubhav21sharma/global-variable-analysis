@@ -146,7 +146,7 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 								tree deref = TREE_OPERAND(var, 0);
 								varName = varToString(deref);
 								var = deref;
-								if (1 || printAllStatementInfo) {
+								if (printAllStatementInfo) {
 									cout << "Pointer is Global = " << varName << endl;
 								}
 							}
@@ -164,7 +164,7 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 
 								for (std::set<Variable>::iterator it = pointees.begin(); it != pointees.end(); it++) {
 									if (isGlobal(it->varTree)) {
-										cout << "Adding global pointee = " << it->varName << endl;
+										//cout << "Adding global pointee = " << it->varName << endl;
 										directGlobalsInFunctions[listOfFunctions[i]].insert(*it);
 									}
 								}
@@ -174,7 +174,7 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 								varName = varToString(deref);
 								Variable v(varName, deref);
 								if (isGlobal(deref)) {
-									cout << "Adding global pointee = " << varName << endl;
+									//cout << "Adding global pointee = " << varName << endl;
 									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 								}
 //									cout << "Var=" << varName << endl;
@@ -183,7 +183,7 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 								varName = varToString(deref);
 								Variable v(varName, deref);
 								if (isGlobal(deref)) {
-									cout << "Adding global pointee = " << varName << endl;
+									//cout << "Adding global pointee = " << varName << endl;
 									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 								}
 							}

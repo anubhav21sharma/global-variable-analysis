@@ -1,6 +1,6 @@
-BASE_DIR =/home/test/GCC
+BASE_DIR =/opt/cs618local/gcc-build
 INSTALL = $(BASE_DIR)/install
-CC = $(INSTALL)/bin/g++
+CC = $(INSTALL)/bin/g++-4.7.2
 
 PLUGIN_HEADER_FILES= ../include/GlobalVarAnalysis.h ../include/Variable.h ../include/Function.h ../include/Common.h
 PLUGIN_SOURCE_FILES= ../src/plugin.cpp ../src/GlobalVarAnalysis.cpp ../src/Variable.cpp ../src/Function.cpp 

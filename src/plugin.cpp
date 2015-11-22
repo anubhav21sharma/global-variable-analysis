@@ -102,7 +102,7 @@ static unsigned int execute_gimple_manipulation(void) {
 	}
 
 	cout << endl << "All Functions:" << endl;
-	fprintf(dump_file, "\nAll Functions:\n");
+	fprintf(dump_file, "\n\nAll Functions:\n");
 	for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end(); it++) {
 		cout << "\t" << it->fId << endl;
 		fprintf(dump_file, "\t%s\n", it->fId.c_str());
@@ -193,5 +193,6 @@ static unsigned int execute_gimple_manipulation(void) {
 		fprintf(dump_file, "\n");
 	}
 	//fclose(tempDump);
+	fprintf(dump_file,"\n\n");
 	return 0;
 }

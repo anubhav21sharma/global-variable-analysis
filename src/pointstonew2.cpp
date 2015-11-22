@@ -2919,7 +2919,7 @@ void call_process_inputs(Allptsinfo & obj_allptinfo) {
 		for (int i = 0; i < VEC_length(constraint_t, aliases); i++) {
 			con = VEC_index(constraint_t, aliases, i);
 			if (con->rhs.ptr_arith && !con->heap_alloc) {
-				fprintf(dump_file, "\n WARNING : Points to an undefined pointer \n ");
+				//fprintf(dump_file, "\n WARNING : Points to an undefined pointer \n ");
 				con->rhs.var = undef_id;
 				con->rhs.type = 0;
 			}
