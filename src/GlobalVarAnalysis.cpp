@@ -38,7 +38,7 @@ GlobalVarAnalysis::~GlobalVarAnalysis() {
 
 void GlobalVarAnalysis::collectPointsToInformation() {
 	Allptsinfo allPointsInfo = execute_ipacs();
-	/*for (map<int, PSet>::iterator it = allPointsInfo.allptinfo.begin(); it != allPointsInfo.allptinfo.end(); it++) {
+	for (map<int, PSet>::iterator it = allPointsInfo.allptinfo.begin(); it != allPointsInfo.allptinfo.end(); it++) {
 		int pointer_id = it->first;
 		csvarinfo_t pointer = VEC_index(csvarinfo_t, csvarmap, pointer_id);
 		tree pvar = pointer->decl;
@@ -67,7 +67,7 @@ void GlobalVarAnalysis::collectPointsToInformation() {
 			Variable pointee(varName, var->decl);
 			pointsToInformation[key].insert(pointee);
 		}
-	}*/
+	}
 }
 
 void GlobalVarAnalysis::collectAllGlobals() {

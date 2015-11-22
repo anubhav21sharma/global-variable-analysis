@@ -93,7 +93,7 @@ static unsigned int execute_gimple_manipulation(void) {
 	gvAnalysis.findReachabilities();
 	gvAnalysis.collectDirectGlobalsInFunction();
 	gvAnalysis.collectIndirectGlobalsInFunction();
-
+	
 	cout << endl << "All Global Vars:" << endl;
 	for (std::vector<Variable>::iterator it = gvAnalysis.listOfGlobalVars.begin(); it != gvAnalysis.listOfGlobalVars.end(); it++) {
 		cout << it->varName << ",";

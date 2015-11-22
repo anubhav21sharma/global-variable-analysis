@@ -2954,11 +2954,11 @@ void call_process_inputs(Allptsinfo & obj_allptinfo) {
 Allptsinfo execute_ipacs(void) {
 	Allptsinfo obj_allptinfo;
 	if (!in_lto_p) {
-		cerr << "in_lto_p is NOT set." << endl;
-		return Allptsinfo();
+		//cerr << "in_lto_p is NOT set." << endl;
+		//return Allptsinfo();
 		//return 0;
 	}
-	cerr << "in_lto_p IS set." << endl;
+	//cerr << "in_lto_p IS set." << endl;
 	//dump_file = stdout;
 
 	struct function *old_cfun = cfun;
@@ -2971,15 +2971,16 @@ Allptsinfo execute_ipacs(void) {
 	fprintf(dump_file, "Printing map:");
 	obj_allptinfo.Display_Map(1);
 	fprintf(dump_file, "Done Printing map:");
+	
+	
+	
+	obj_allptinfo.print_failed_constraints();
+	fprintf(dump_file, "\n\n");
 
-	/*
-	 obj_allptinfo.print_failed_constraints();
-	 fprintf(dump_file, "\n\n");
+	delete_block_aux();
 
-	 delete_block_aux();
-
-	 end_fn_aux();
-	 */
+	end_fn_aux();
+	
 	return obj_allptinfo;
 }
 

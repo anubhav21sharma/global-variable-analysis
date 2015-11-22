@@ -2785,16 +2785,14 @@ void print_parsed_data ()
 void init_fn_aux()
 {
 	struct cgraph_node *cnode;
-for (cnode=cgraph_nodes; cnode; cnode=cnode->next) {
-
-        basic_block current_block;
+	for (cnode=cgraph_nodes; cnode; cnode=cnode->next) {
+		basic_block current_block;
         if (!gimple_has_body_p (cnode->decl) || cnode->clone_of)
           continue;
         push_cfun (DECL_STRUCT_FUNCTION (cnode->decl));
-
         cnode->aux = new function_info();
         pop_cfun();
-        }
+	}
 }
 
 void end_fn_aux()
