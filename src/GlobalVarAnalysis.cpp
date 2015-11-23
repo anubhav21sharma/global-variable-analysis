@@ -15,8 +15,14 @@ using namespace std;
 extern Allptsinfo execute_ipacs();
 
 #define intToString(x) dynamic_cast< std::ostringstream & >(( std::ostringstream() << std::dec << x ) ).str()
+#define SSA_NAME_IDENTIFIER(NODE)                               \
+	  (SSA_NAME_CHECK (NODE)->ssa_name.var != NULL_TREE             \
+	      ? (TREE_CODE ((NODE)->ssa_name.var) == IDENTIFIER_NODE       \
+			        ? (NODE)->ssa_name.var                                    \
+			        : DECL_NAME ((NODE)->ssa_name.var))                       \
+	      : NULL_TREE)
 
-bool printAllStatementInfo = true;
+bool printAllStatementInfo = false;
 
 GlobalVarAnalysis::GlobalVarAnalysis() {
 
@@ -157,7 +163,9 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 							string varName = varToString(var);
 							if (TREE_CODE(var) == MEM_REF || TREE_CODE(var) == TARGET_MEM_REF) {
 								tree deref = TREE_OPERAND(var, 0);
-								deref = SSA_NAME_VAR(deref);
+								//deref = SSA_NAME_VAR(deref);
+								if (TREE_CODE(deref) == SSA_NAME)
+									deref = SSA_NAME_VAR(deref);
 								varName = varToString(deref);
 								Variable pointer(varName, deref);
 								set<Variable> pointees = pointsToInformation[pointer];
@@ -269,8 +277,8 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 					if (gimple_code(curStmt) == GIMPLE_LABEL || gimple_code(curStmt) == GIMPLE_ASM || gimple_code(curStmt) == GIMPLE_NOP || gimple_code(curStmt) == GIMPLE_RESX) {
 
 					} else {
-						cout << "Unhandled statement : " << "\t";
-						print_gimple_stmt(stdout, curStmt, 0, 0);
+						//cout << "Unhandled statement : " << "\t";
+						//print_gimple_stmt(stdout, curStmt, 0, 0);
 						//cout << "\t File : " << gimple_filename(curStmt) << " Line : " << gimple_lineno(curStmt) << endl;
 					}
 				}
