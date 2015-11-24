@@ -1687,7 +1687,8 @@ void cs_do_structure_copy (tree lhsop, tree rhsop, basic_block bb, struct cgraph
          gcc_assert (VEC_length (ce_s, lhsc) == 1);
          lhsp->offset = UNKNOWN_OFFSET;
        }
-     if (rhsp->type == DEREF)
+	 //CHANGED: Small hack to ensure rhsp is allocated memory before dereferencing.
+     if (rhsp != NULL && rhsp != ((void *)8) && rhsp->type == DEREF)
        {
          gcc_assert (VEC_length (ce_s, rhsc) == 1);
          rhsp->offset = UNKNOWN_OFFSET;

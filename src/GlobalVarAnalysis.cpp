@@ -22,7 +22,7 @@ extern Allptsinfo execute_ipacs();
 			        : DECL_NAME ((NODE)->ssa_name.var))                       \
 	      : NULL_TREE)
 
-bool printAllStatementInfo = false;
+bool printAllStatementInfo = true;
 
 GlobalVarAnalysis::GlobalVarAnalysis() {
 
@@ -160,7 +160,7 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 							directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 						} else {
 							//Check whether variable is a pointer and add globals from pointee set.
-							string varName = varToString(var);
+							string varName; //= varToString(var);
 							if (TREE_CODE(var) == MEM_REF || TREE_CODE(var) == TARGET_MEM_REF) {
 								tree deref = TREE_OPERAND(var, 0);
 								//deref = SSA_NAME_VAR(deref);

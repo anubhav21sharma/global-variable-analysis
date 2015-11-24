@@ -192,6 +192,23 @@ static unsigned int execute_gimple_manipulation(void) {
 		cout << endl;
 		fprintf(dump_file, "\n");
 	}
+	
+	cout << endl << "Statistics:" << endl;
+    fprintf(dump_file, "\nStatistics:\n");
+    for (std::vector<Function>::iterator it = gvAnalysis.listOfFunctions.begin(); it != gvAnalysis.listOfFunctions.end();it++){
+                cout << "\t" << it->fId << " : ";
+                fprintf(dump_file, "\t%s : ", it->fId.c_str());
+                set<Variable> svars = gvAnalysis.directGlobalsInFunctions[*it];
+                set<Variable> ivars = gvAnalysis.indirectGlobalsInFunctions[*it];
+                cout<<"Direct("<<svars.size()<<")";
+				cout<<", Indirect("<<ivars.size()<<")";
+				fprintf(dump_file, "Direct(%d), ",svars.size());
+				fprintf(dump_file, ", Indirect(%d), ",ivars.size());
+                cout << endl;
+                //fprintf(dump_file, "\n");
+        }
+
+
 	//fclose(tempDump);
 	fprintf(dump_file,"\n\n");
 	return 0;
