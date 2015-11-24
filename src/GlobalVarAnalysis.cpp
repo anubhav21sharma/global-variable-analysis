@@ -22,7 +22,7 @@ extern Allptsinfo execute_ipacs();
 			        : DECL_NAME ((NODE)->ssa_name.var))                       \
 	      : NULL_TREE)
 
-bool printAllStatementInfo = true;
+bool printAllStatementInfo = false;
 
 GlobalVarAnalysis::GlobalVarAnalysis() {
 
@@ -197,14 +197,24 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 								}
 							} else if (TREE_CODE(var) == COMPONENT_REF) {
 								tree deref = TREE_OPERAND(var, 0);
-								while (TREE_CODE(deref) == COMPONENT_REF || TREE_CODE(deref) == ARRAY_REF) {
+								while (TREE_CODE(deref) == COMPONENT_REF || TREE_CODE(deref) == ARRAY_REF || TREE_CODE(deref) == MEM_REF) {
 									deref = TREE_OPERAND(deref, 0);
+									if (TREE_CODE(deref) == SSA_NAME)
+										deref = SSA_NAME_VAR(deref);
 								}
 								varName = varToString(deref);
 								Variable v(varName, deref);
 								if (isGlobal(deref)) {
 									directGlobalsInFunctions[listOfFunctions[i]].insert(v);
 								}
+								//If there was a memory reference (e.g. p->i) then add all global pointees of the variable.
+								set<Variable> pointees = pointsToInformation[v];
+								for (std::set<Variable>::iterator it = pointees.begin(); it != pointees.end(); it++) {
+									if (isGlobal(it->varTree)) {
+										directGlobalsInFunctions[listOfFunctions[i]].insert(*it);
+									}
+								}
+
 							}
 						}
 
@@ -219,15 +229,24 @@ void GlobalVarAnalysis::collectDirectGlobalsInFunction() {
 							cout << "isGlobal = " << isGlobal(arg) << endl;
 							cout << "code=" << TREE_CODE(arg) << endl;
 						}
-						if (TREE_CODE(arg) == COMPONENT_REF || TREE_CODE(arg) == ARRAY_REF) {
+						if (TREE_CODE(arg) == COMPONENT_REF || TREE_CODE(arg) == ARRAY_REF || TREE_CODE(arg) == MEM_REF) {
 							tree deref = TREE_OPERAND(arg, 0);
-							while (TREE_CODE(deref) == COMPONENT_REF || TREE_CODE(deref) == ARRAY_REF) {
+							while (TREE_CODE(deref) == COMPONENT_REF || TREE_CODE(deref) == ARRAY_REF || TREE_CODE(deref) == MEM_REF) {
 								deref = TREE_OPERAND(deref, 0);
+								if (TREE_CODE(deref) == SSA_NAME)
+									deref = SSA_NAME_VAR(deref);
 							}
 							string varName = varToString(deref);
 							Variable v(varName, deref);
 							if (isGlobal(deref)) {
 								directGlobalsInFunctions[listOfFunctions[i]].insert(v);
+							}
+							//If there was a memory reference (e.g. p->i) then add all global pointees of the variable.
+							set<Variable> pointees = pointsToInformation[v];
+							for (std::set<Variable>::iterator it = pointees.begin(); it != pointees.end(); it++) {
+								if (isGlobal(it->varTree)) {
+									directGlobalsInFunctions[listOfFunctions[i]].insert(*it);
+								}
 							}
 						} else if (TREE_CODE(arg) == ADDR_EXPR) {
 							tree deref = TREE_OPERAND(arg, 0);
